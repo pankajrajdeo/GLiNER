@@ -1,9 +1,9 @@
 # Model Configuration
-model_name: microsoft/deberta-v3-small # Hugging Face model
-labels_encoder: "BAAI/bge-small-en-v1.5"
-name: "span level gliner"
+model_name: bioformers/bioformer-16L # Bioformer for biomedical text
+labels_encoder: "sentence-transformers/all-MiniLM-L6-v2" # Label encoder model
+name: "biomedical span level gliner"
 max_width: 12
-hidden_size: 768
+hidden_size: 384 # Match bioformer-16L's hidden size
 dropout: 0.3
 fine_tune: true
 subtoken_pooling: first
@@ -12,10 +12,11 @@ post_fusion_schema: "l2l-l2t-t2t"
 span_mode: markerV0
 
 # Training Parameters
-num_steps: 100000
-train_batch_size: 8
-eval_every: 5000
-warmup_ratio: 0.05
+num_steps: -1 # Set to -1 to use num_epochs instead
+num_epochs: 1 # Train for 10 epochs
+train_batch_size: 16
+eval_every: 1 # Evaluate every epoch
+warmup_ratio: 0.1
 scheduler_type: "cosine"
 
 # loss function
@@ -34,9 +35,8 @@ max_grad_norm: 10.0
 
 # Directory Paths
 root_dir: gliner_logs
-train_data: "data.json" #"data/nuner_train.json" # see https://github.com/urchade/GLiNER/tree/main/data
+train_data: "/content/GLiNER/data/gliner_training_data.json" # Path to your converted data
 val_data_dir: "none"
-# "NER_datasets": val data from the paper can be obtained from "https://drive.google.com/file/d/1T-5IbocGka35I7X3CE6yKe5N_Xg2lVKT/view"
 
 # Pretrained Model Path
 # Use "none" if no pretrained model is being used

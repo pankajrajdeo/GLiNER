@@ -81,6 +81,15 @@ if __name__ == '__main__':
         test_dataset = test_data
         data_collator = DataCollator(model.config, data_processor=model.data_processor, prepare_labels=True)
 
+    # Calculate max_steps based on epochs if num_steps is -1
+    max_steps = config.num_steps
+    if hasattr(config, 'num_epochs') and config.num_steps == -1:
+        steps_per_epoch = len(train_data) // config.train_batch_size
+        max_steps = steps_per_epoch * config.num_epochs
+        print(f"Training for {config.num_epochs} epochs ({max_steps} steps)")
+    else:
+        print(f"Training for {config.num_steps} steps")
+
     training_args = TrainingArguments(
         output_dir=config.log_dir,
         learning_rate=float(config.lr_encoder),
@@ -94,7 +103,7 @@ if __name__ == '__main__':
         per_device_train_batch_size=config.train_batch_size,
         per_device_eval_batch_size=config.train_batch_size,
         max_grad_norm=config.max_grad_norm,
-        max_steps=config.num_steps,
+        max_steps=max_steps,
         evaluation_strategy="epoch",
         save_steps = config.eval_every,
         save_total_limit=config.save_total_limit,
